@@ -1,0 +1,29 @@
+# Build outputok (ezek újrafordíthatók)
+Debug/
+Release/
+build/
+output/
+
+# ordító által generált fájlok
+*.o
+*.d
+*.elf
+*.bin
+*.hex
+*.map
+*.lst
+*.su
+*.i
+
+# Ideiglenes vagy log fájlok
+*.log
+*.bak
+*.tmp
+
+# Operációs rendszer szemétfájlok
+.DS_Store
+Thumbs.db
+
+# Python vagy egyéb segédszkriptek cache
+__pycache__/
+*.pyc
