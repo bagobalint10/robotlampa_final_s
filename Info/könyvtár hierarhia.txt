@@ -1,0 +1,6 @@
+-- kezdjük el átírni a modulokat
+-- ehhez a legalsóbb szintekről kell kezdenem az egészet 
+
+--> hal_layer
+		--> gpio
+		--> 

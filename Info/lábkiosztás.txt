@@ -1,0 +1,28 @@
+
+-->  funkciók		--> láb 
+
+	gomb_enter
+	gomb_mode
+	gomb_fel
+	gomb_le
+	
+	usart_tx
+	usart_rx
+	
+	motor_1_step	- PA0 - TIM2_CH1
+	motor_1_dir
+	motor_2_step
+	motor_2_dir
+	
+	hall_1
+	hall_2
+	hall_2
+	
+	relé
+	
+	shift_data
+	shift_latch
+	shift_clk
+	
+	
+	
