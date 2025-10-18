@@ -6,31 +6,32 @@
  */ 
 
  #include "eepromh.h"
- #include <avr/interrupt.h>
+ //#include <avr/interrupt.h>
 
 
  void eeprom_write_byte(unsigned int uiAddress, uint8_t ucData)
  {
-	 while(EECR & (1<<EEPE));   // elõzõ írás várása 
+	 /*while(EECR & (1<<EEPE));   // elï¿½zï¿½ ï¿½rï¿½s vï¿½rï¿½sa
 
 	 cli();
-	 EEAR = uiAddress;	  // adat + cím megadása 
+	 EEAR = uiAddress;	  // adat + cï¿½m megadï¿½sa 
 	 EEDR = ucData;
 	 
-	 EECR |= (1<<EEMPE);  // adat beírása --> eeprom
+	 EECR |= (1<<EEMPE);  // adat beï¿½rï¿½sa --> eeprom
 	 EECR |= (1<<EEPE);	 
-	 sei();
+	 sei();*/
  }
 
 
  uint8_t eeprom_read_byte(unsigned int uiAddress)
  {
-	 while(EECR & (1<<EEPE));  // elõzõ írás várása
+	 /*while(EECR & (1<<EEPE));  // elï¿½zï¿½ ï¿½rï¿½s vï¿½rï¿½sa
 	 
-	 EEAR = uiAddress;	// cím megadása
-	 EECR |= (1<<EERE);	  // adat kiolvasása ,  eeprom   --> EEDR
+	 EEAR = uiAddress;	// cï¿½m megadï¿½sa
+	 EECR |= (1<<EERE);	  // adat kiolvasï¿½sa ,  eeprom   --> EEDR
 	 
-	 return EEDR;	
+	 return EEDR;*/
+	 return 0;
  }
 
 

@@ -8,7 +8,7 @@
 
 #ifndef EEPROMH_H_
 #define EEPROMH_H_
-	#include "avr/io.h"
+	#include "stm32f4xx_hal.h"
 
 	void eeprom_write_byte(unsigned int uiAddress, uint8_t ucData);
 	uint8_t eeprom_read_byte(unsigned int uiAddress);

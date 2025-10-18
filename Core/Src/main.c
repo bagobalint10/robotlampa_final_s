@@ -98,8 +98,17 @@ int main(void)
   MX_TIM5_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+
+
+
   my_main_init();
   HAL_TIM_PWM_Start_IT(&htim2, TIM_CHANNEL_1);
+  //HAL_TIM_Base_Start_IT(&htim2); //vagy ez
+  //HAL_UART_Receive_IT(&huart1, rxBuffer, RX_SIZE);
+  //HAL_TIM_Base_Start_IT(&htim5);
+
+
+
 
   /* USER CODE END 2 */
 
