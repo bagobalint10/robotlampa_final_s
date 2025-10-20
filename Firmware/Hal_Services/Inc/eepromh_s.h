@@ -11,7 +11,7 @@
 	#include "stm32f4xx_hal.h"
 
 	void eeprom_write_byte(unsigned int uiAddress, uint8_t ucData);
-	uint8_t eeprom_read_byte(unsigned int uiAddress);
+	uint32_t eeprom_read(void);
 
 
 

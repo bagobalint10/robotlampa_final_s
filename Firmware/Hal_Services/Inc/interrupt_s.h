@@ -11,17 +11,13 @@
 
 	#include "stm32f4xx_hal.h"
 	#include "main.h"
-	//#include <avr/interrupt.h>
 
+	// saját modulok használják
 	void set_pcint_Callback(uint8_t port ,void (*Callback_function)(uint16_t) );
-	void ISR_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
-
 	void set_timer_int_Callback(uint8_t timer ,void (*Callback_function)(void) );
-	//void timer_int_init(uint8_t timer, uint8_t interrupt_type);
-
 	void set_usart_int_Callback(uint8_t type ,void (*Callback_function)(void) );
 	
-
-
+	// main.c hívja meg
+	void ISR_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 #endif /* INTERRUPT_H_ */

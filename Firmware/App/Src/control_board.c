@@ -5,14 +5,13 @@
  *  Author: bagob
  */ 
 
- #include "control_board.h"
+ #include <eepromh_s.h>
+#include "control_board.h"
 
  #include "buttons.h"
 
  #include "lcd_driver.h"
- #include "eepromh.h"
-
- #include "relay.h"
+  #include "relay.h"
 
  //glob�lis v�ltoz�k
  uint8_t *dmx_adress_pointer;
@@ -403,13 +402,10 @@ static uint8_t lamp_count = 0;
 	//relay_init();
 
 	// eeprom kiolvas�s
-	lamp_cold_f = eeprom_read_byte(2);
+	/*lamp_cold_f = eeprom_read_byte(2);
 	dmx_adress = eeprom_read_byte(0);
-	dmx_adress |= (eeprom_read_byte(1)<<8);
+	dmx_adress |= (eeprom_read_byte(1)<<8);*/
 
-	dmx_adress_pointer = (dmx_array+(dmx_adress-1)+2);
-	// T�R�LD KI !!!! 
-	dmx_adress_pointer = dmx_array; // FIX �RT�KRE �LL�T�S IDEIGLENESEN !!
 
 
  }

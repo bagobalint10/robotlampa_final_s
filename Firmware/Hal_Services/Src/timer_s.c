@@ -6,7 +6,6 @@
  */ 
 
  #include <timer_s.h>
- #include "interrupt.h"
 
 ////  public
 
