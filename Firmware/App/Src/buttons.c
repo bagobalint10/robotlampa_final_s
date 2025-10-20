@@ -7,11 +7,9 @@
 
  #include "buttons.h"
 
- //#include "port_config.h"
+
  #include "interrupt.h"
- //#include "gpio.h"
  #include "stddef.h"
- //#include "timer.h"
 
 
  static volatile uint8_t buttons = 0;	// direktbe beolvasott gomb �rt�kek
@@ -24,9 +22,25 @@
 
  // private 
 
- static void pcint_c_callback(void)				// pcint_C lekezek�se
+ static void pcint_c_callback(uint16_t GPIO_pin)				// pcint_C lekezek�se
  {
-//	buttons = PORT_Read(&BTN_COMMON_PIN_IN);	//C port beolvas�s	--> diregt beolvasott dolog
+
+	 switch(GPIO_pin)
+	 {
+	 case GOMB_UP_Pin :		buttons  = (buttons & ~(0x01));
+	 	 	 	 	 		buttons |= HAL_GPIO_ReadPin(GOMB_UP_GPIO_Port, GOMB_UP_Pin);
+		 	 	 	 	 	break;
+	 case GOMB_DOWN_Pin :	buttons  = (buttons & ~(0x02));
+ 	 						buttons |= (HAL_GPIO_ReadPin(GOMB_DOWN_GPIO_Port, GOMB_DOWN_Pin)<<1);
+		 	 	 	 	 	break;
+	 case GOMB_ENTER_Pin :	buttons  = (buttons & ~(0x04));
+ 	 						buttons |= (HAL_GPIO_ReadPin(GOMB_ENTER_GPIO_Port, GOMB_ENTER_Pin)<<2);
+		 	 	 	 	 	break;
+	 case GOMB_MODE_Pin :	buttons  = (buttons & ~(0x08));
+ 	 						buttons |= (HAL_GPIO_ReadPin(GOMB_MODE_GPIO_Port, GOMB_MODE_Pin)<<3);
+		 	 	 	 	 	break;
+	 default: break;
+	 }
  }
 
  // public 
@@ -43,27 +57,20 @@
  {
 	db_time = debounce_time;
 
-	// gomb pinek bemenet + pullup  - init
-/*
-	PORT_Init(&BTN_UP_DIR,BTN_UP_PIN,0);		// PC0 - input
-	PORT_Write(&BTN_UP_PORT,BTN_UP_PIN,1);		// P0 - pull up
+	set_pcint_Callback(0, pcint_c_callback);		// Callback fgv. be�ll�t�sa
 
-	PORT_Init(&BTN_DOWN_DIR,BTN_DOWN_PIN,0);	// PC1
-	PORT_Write(&BTN_DOWN_PORT,BTN_DOWN_PIN,1);
+	buttons  = (buttons & ~(0x01));					// kezdő értékek kiolvasása
+	buttons |= HAL_GPIO_ReadPin(GOMB_UP_GPIO_Port, GOMB_UP_Pin);
 
-	PORT_Init(&BTN_ENTER_DIR,BTN_ENTER_PIN,0); // PC2
-	PORT_Write(&BTN_UP_PORT,BTN_ENTER_PIN,1);
+	buttons  = (buttons & ~(0x02));
+	buttons |= (HAL_GPIO_ReadPin(GOMB_DOWN_GPIO_Port, GOMB_DOWN_Pin)<<1);
 
-	PORT_Init(&BTN_MODE_DIR,BTN_MODE_PIN,0);	// PC3
-	PORT_Write(&BTN_MODE_PORT,BTN_MODE_PIN,1);*/
+	buttons  = (buttons & ~(0x04));
+	buttons |= (HAL_GPIO_ReadPin(GOMB_ENTER_GPIO_Port, GOMB_ENTER_Pin)<<2);
 
-	// pcint  callback be�ll�t�sa gombokra
+	buttons  = (buttons & ~(0x08));
+	buttons |= (HAL_GPIO_ReadPin(GOMB_MODE_GPIO_Port, GOMB_MODE_Pin)<<3);
 
-	set_pcint_Callback(PCINT_C, pcint_c_callback);		// Callback fgv. be�ll�t�sa
-	//pcint_init(PCINT_C, 0b00001111);					// C portra enable , maszkol�s 4 gombra
-
-//	buttons = PORT_Read(&BTN_COMMON_PIN_IN); // 0. olvas�s
-	// hal_gpio
  }
 
  void button_read(void)
@@ -71,7 +78,7 @@
 	static uint32_t prev_time = 0;		// perg�s mentes�t�shez v�ltoz�k
 	static uint16_t interval_time = 0;
 
-	uint32_t current_time = millis();
+	uint32_t current_time = HAL_GetTick();
 	interval_time = db_time;	//devounce time be�ll�t�sa 
 
 	if ((uint32_t)(current_time - prev_time)>= interval_time)  //perg�s mentes�t�s

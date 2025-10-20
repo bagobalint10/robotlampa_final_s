@@ -61,6 +61,26 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define LED_Pin GPIO_PIN_13
 #define LED_GPIO_Port GPIOC
+#define SR_LATCH_Pin GPIO_PIN_12
+#define SR_LATCH_GPIO_Port GPIOA
+#define SR_CLOCK_Pin GPIO_PIN_15
+#define SR_CLOCK_GPIO_Port GPIOA
+#define SR_DATA_Pin GPIO_PIN_3
+#define SR_DATA_GPIO_Port GPIOB
+#define RELAY_Pin GPIO_PIN_4
+#define RELAY_GPIO_Port GPIOB
+#define GOMB_UP_Pin GPIO_PIN_6
+#define GOMB_UP_GPIO_Port GPIOB
+#define GOMB_UP_EXTI_IRQn EXTI9_5_IRQn
+#define GOMB_DOWN_Pin GPIO_PIN_7
+#define GOMB_DOWN_GPIO_Port GPIOB
+#define GOMB_DOWN_EXTI_IRQn EXTI9_5_IRQn
+#define GOMB_ENTER_Pin GPIO_PIN_8
+#define GOMB_ENTER_GPIO_Port GPIOB
+#define GOMB_ENTER_EXTI_IRQn EXTI9_5_IRQn
+#define GOMB_MODE_Pin GPIO_PIN_9
+#define GOMB_MODE_GPIO_Port GPIOB
+#define GOMB_MODE_EXTI_IRQn EXTI9_5_IRQn
 
 /* USER CODE BEGIN Private defines */
 

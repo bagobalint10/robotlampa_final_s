@@ -10,9 +10,9 @@
 #include "stddef.h"
 
 // PCINT pointers 
-static void (*pcint_b_callback_pointer)(void) = NULL;
-static void (*pcint_c_callback_pointer)(void) = NULL;
-static void (*pcint_d_callback_pointer)(void) = NULL;
+static void (*pcint_b_callback_pointer)(uint16_t GPIO_Pin) = NULL;
+static void (*pcint_c_callback_pointer)(uint16_t GPIO_Pin) = NULL;
+//static void (*pcint_d_callback_pointer)(void) = NULL;
 // TIMER int pointers
 static void (*timer_0_callback_pointer)(void) = NULL;
 static void (*timer_1_callback_pointer)(void) = NULL;
@@ -65,17 +65,25 @@ static void (*usart_rx_callback_pointer)(void) = NULL;
 
   */
 
+ void ISR_GPIO_EXTI_Callback(uint16_t GPIO_Pin) // meghívja a pointer függvényt
+ {
+
+
+		if(pcint_b_callback_pointer) pcint_b_callback_pointer(GPIO_Pin);	// hall
+		if(pcint_c_callback_pointer) pcint_c_callback_pointer(GPIO_Pin); 	// gombok
+ }
 
 
 
-  void set_pcint_Callback(uint8_t port ,void (*Callback_function)(void) )
+
+  void set_pcint_Callback(uint8_t port ,void (*Callback_function)(uint16_t) )
    {
 
   	switch(port)
   	{
-  		case 0 : pcint_b_callback_pointer = Callback_function; break;
-  		case 1 : pcint_c_callback_pointer = Callback_function; break;
-  		case 2 : pcint_d_callback_pointer = Callback_function; break;
+  		case 0 : pcint_c_callback_pointer = Callback_function; break; // gombok int
+  		case 1 : pcint_b_callback_pointer = Callback_function;  break;
+  		case 2 :  break;
   		default : break;
   	}
    }

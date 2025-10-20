@@ -41,15 +41,19 @@
 
 		 if(~(sr_data) & (0x01 << i)) //2. kishiftel�s
 		 {
-			 PORT_Write(&SR_DATA_PORT, SR_DATA_PIN, 1); // data pin HIGH
+			// PORT_Write(&SR_DATA_PORT, SR_DATA_PIN, 1); // data pin HIGH
+			 HAL_GPIO_WritePin(SR_DATA_GPIO_Port, SR_DATA_Pin, 1);
 		 }
 		 else
 		 {
-			 PORT_Write(&SR_DATA_PORT, SR_DATA_PIN, 0);	// data pin LOW
+			 //PORT_Write(&SR_DATA_PORT, SR_DATA_PIN, 0);	// data pin LOW
+			 HAL_GPIO_WritePin(SR_DATA_GPIO_Port, SR_DATA_Pin, 0);
 		 }
 
-		 PORT_Write(&SR_CLOCK_PORT, SR_CLOCK_PIN, 1); // clock pulse
-		 PORT_Write(&SR_CLOCK_PORT, SR_CLOCK_PIN, 0);
+		 //PORT_Write(&SR_CLOCK_PORT, SR_CLOCK_PIN, 1); // clock pulse
+		 //PORT_Write(&SR_CLOCK_PORT, SR_CLOCK_PIN, 0);
+		 HAL_GPIO_WritePin(SR_CLOCK_GPIO_Port, SR_CLOCK_Pin, 1);
+		 HAL_GPIO_WritePin(SR_CLOCK_GPIO_Port, SR_CLOCK_Pin, 0);
 	 }
  }
 
@@ -76,13 +80,13 @@
 
 
 // public functions
- 
+ /*
 void segment_Init(void)
 {
 	PORT_Init(&SR_LATCH_DIR, SR_LATCH_PIN, OUTPUT);
 	PORT_Init(&SR_CLOCK_DIR, SR_CLOCK_PIN, OUTPUT);
 	PORT_Init(&SR_DATA_DIR, SR_DATA_PIN, OUTPUT);
-}
+}*/
 
 
 void segment_write_digit(uint8_t digit, uint8_t character, uint8_t dot, uint8_t enable)  //ez kezeli a multiplexel�st is ? diregtbe �ll�tja a portokat?
@@ -112,8 +116,10 @@ void segment_write_digit(uint8_t digit, uint8_t character, uint8_t dot, uint8_t 
 
 	//Refresh outputs
 
-	PORT_Write(&SR_LATCH_PORT, SR_LATCH_PIN, 1);  // latch pulse --> kimenet friss�t�se
-	PORT_Write(&SR_LATCH_PORT, SR_LATCH_PIN, 0);		
+	//PORT_Write(&SR_LATCH_PORT, SR_LATCH_PIN, 1);  // latch pulse --> kimenet friss�t�se
+	//PORT_Write(&SR_LATCH_PORT, SR_LATCH_PIN, 0);
+	HAL_GPIO_WritePin(SR_LATCH_GPIO_Port, SR_LATCH_Pin, 1);
+	HAL_GPIO_WritePin(SR_LATCH_GPIO_Port, SR_LATCH_Pin, 0);
 }
 
 

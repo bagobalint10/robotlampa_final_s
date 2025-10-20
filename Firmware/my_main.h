@@ -10,6 +10,7 @@
 
 	#include "stm32f4xx_hal.h"
 
+
 	void my_main_init(void);
 	void my_main_loop(void);
 

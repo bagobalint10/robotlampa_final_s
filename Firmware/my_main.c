@@ -7,16 +7,18 @@
 
 #include <my_main.h>
 
-#include <timer_s.h>
-
+#include<control_board.h>
 
 
  void my_main_init(void)
  {
 
+	 control_board_init();
  }
  void my_main_loop(void)
  {
 
-
+	 control_board_main();
  }
+
+
