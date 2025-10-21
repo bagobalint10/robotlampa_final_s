@@ -110,7 +110,7 @@ int main(void)
   //HAL_TIM_Base_Start_IT(&htim2); //vagy ez
   HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);
   HAL_TIM_Base_Start_IT(&htim2);
-  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0); // set pwm duty
+  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, PWM_ON_DUTY); // set pwm duty
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);		// start tim2 pwm channel
   htim2.Instance->CR1 &= ~TIM_CR1_ARPE; // ARPE = 0 → shadow OFF
 
@@ -200,7 +200,7 @@ static void MX_TIM2_Init(void)
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 83;
+  htim2.Init.Prescaler = 64;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
   htim2.Init.Period = 999;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -431,8 +431,9 @@ void usart_transmit(uint8_t *data)
 
 void tim_2_set_duty(uint8_t duty)
 {
-	if(duty)__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, PWM_ON_DUTY); // set pwm duty
-	else __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, PWM_OFF_DUTY); // set pwm duty
+	if(duty) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, PWM_ON_DUTY); // set pwm duty
+	else 	 __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, PWM_OFF_DUTY); // set pwm duty
+
 }
 
 uint32_t tim_2_get_value(void)
