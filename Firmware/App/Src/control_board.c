@@ -6,16 +6,16 @@
  */ 
 
  #include <eepromh_s.h>
-#include "control_board.h"
+ #include "control_board.h"
 
  #include "buttons.h"
 
  #include "lcd_driver.h"
-  #include "relay.h"
+ #include "relay.h"
+ #include <dmx_usart.h>
 
  //glob�lis v�ltoz�k
- uint8_t *dmx_adress_pointer;
- uint8_t dmx_array[512];
+
  //
 
  static int dmx_adress = 0x01;
@@ -293,7 +293,7 @@ static uint8_t lamp_count = 0;
 			eeprom_write_byte(1, (uint8_t)(dmx_adress >> 8));		// lamp ment�s majd be kapcsol�sn�l
 
 			// DMX ADRESST ITT LEHET GLOB�LIS V�LTOZ�BA BET�LTENI !!! 
-			dmx_adress_pointer = (dmx_array+(dmx_adress-1)+2);
+			dmx_adress_pointer = (dmx_array+(dmx_adress));
 		}
 
 	}
@@ -400,7 +400,7 @@ static uint8_t lamp_count = 0;
 	set_buttons_variables(&bt_up, &bt_down, &bt_enter, &bt_mode);
 	lcd_init(4);	// 4x4 = 16ms refresh time 
 	//relay_init();
-
+	dmx_adress_pointer = (dmx_array+(dmx_adress));
 	// eeprom kiolvas�s
 	/*lamp_cold_f = eeprom_read_byte(2);
 	dmx_adress = eeprom_read_byte(0);

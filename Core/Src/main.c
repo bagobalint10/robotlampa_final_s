@@ -17,12 +17,13 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include <interrupt_s.h>
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <my_main.h>
+#include <interrupt_s.h>
+#include <dmx_usart.h>
 
 /* USER CODE END Includes */
 
@@ -48,6 +49,7 @@ TIM_HandleTypeDef htim5;
 UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
+uint8_t rx_buffer;
 
 /* USER CODE END PV */
 
@@ -105,7 +107,7 @@ int main(void)
   my_main_init();
   //HAL_TIM_PWM_Start_IT(&htim2, TIM_CHANNEL_1);
   //HAL_TIM_Base_Start_IT(&htim2); //vagy ez
-  //HAL_UART_Receive_IT(&huart1, rxBuffer, RX_SIZE);
+  HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);
   //HAL_TIM_Base_Start_IT(&htim5);
 
 
@@ -294,9 +296,9 @@ static void MX_USART1_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
+  huart1.Init.BaudRate = 250000;
   huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.StopBits = UART_STOPBITS_2;
   huart1.Init.Parity = UART_PARITY_NONE;
   huart1.Init.Mode = UART_MODE_TX_RX;
   huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
@@ -394,6 +396,45 @@ static void MX_GPIO_Init(void)
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	ISR_GPIO_EXTI_Callback(GPIO_Pin);
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+  if (huart->Instance == USART1)
+  {
+    // Például visszaküldjük, amit kaptunk
+
+    //HAL_UART_Transmit(&huart2, tx_buffer, strlen((char*)tx_buffer), HAL_MAX_DELAY);
+
+    // Újraindítjuk a fogadást
+	  usart_rx_callback(rx_buffer);
+	  HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);
+  }
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART1)
+    {
+    	// HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_2);
+
+        //if ((__HAL_UART_GET_FLAG(huart, UART_FLAG_FE)))  // Frame Error = BREAK
+        //{
+            // új frame kezdete
+            //dmx_index = 0;
+
+        	usart_rx_fe_callback();
+
+            //__HAL_UART_CLEAR_FLAG(huart, UART_FLAG_FE);
+
+            HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);
+        //}
+    }
+}
+
+void usart_transmit(uint8_t *data)
+{
+	HAL_UART_Transmit(&huart1, data, 1, HAL_MAX_DELAY);
 }
 /* USER CODE END 4 */
 

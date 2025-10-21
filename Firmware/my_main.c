@@ -8,6 +8,7 @@
  #include <my_main.h>
 
  #include<control_board.h>
+ #include<dmx_usart.h>
 
 
  void my_main_init(void)
@@ -19,6 +20,8 @@
  void my_main_loop(void)
  {
 	 control_board_main();
+	 dmx_usart_send();
+
  }
 
 
