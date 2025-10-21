@@ -17,14 +17,14 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
-#include <dmx_usart_s.h>
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <my_main.h>
 #include <interrupt_s.h>
-
+#include <dmx_usart_s.h>
+#include <motor_drive.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -34,6 +34,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
 
 /* USER CODE END PD */
 
@@ -108,6 +109,13 @@ int main(void)
   //HAL_TIM_PWM_Start_IT(&htim2, TIM_CHANNEL_1);
   //HAL_TIM_Base_Start_IT(&htim2); //vagy ez
   HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);
+  HAL_TIM_Base_Start_IT(&htim2);
+  __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, 0); // set pwm duty
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);		// start tim2 pwm channel
+  htim2.Instance->CR1 &= ~TIM_CR1_ARPE; // ARPE = 0 → shadow OFF
+
+
+
   //HAL_TIM_Base_Start_IT(&htim5);
 
 
@@ -334,7 +342,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_2|GPIO_PIN_3|SR_LATCH_Pin|SR_CLOCK_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, MOTOR_2_DIRECTION_Pin|MOTOR_1_DIRECTION_Pin|SR_LATCH_Pin|SR_CLOCK_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, SR_DATA_Pin|RELAY_Pin, GPIO_PIN_RESET);
@@ -346,8 +354,8 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PA2 PA3 SR_LATCH_Pin SR_CLOCK_Pin */
-  GPIO_InitStruct.Pin = GPIO_PIN_2|GPIO_PIN_3|SR_LATCH_Pin|SR_CLOCK_Pin;
+  /*Configure GPIO pins : MOTOR_2_DIRECTION_Pin MOTOR_1_DIRECTION_Pin SR_LATCH_Pin SR_CLOCK_Pin */
+  GPIO_InitStruct.Pin = MOTOR_2_DIRECTION_Pin|MOTOR_1_DIRECTION_Pin|SR_LATCH_Pin|SR_CLOCK_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -419,6 +427,32 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 void usart_transmit(uint8_t *data)
 {
 	HAL_UART_Transmit(&huart1, data, 1, 10);
+}
+
+void tim_2_set_duty(uint8_t duty)
+{
+	if(duty)__HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, PWM_ON_DUTY); // set pwm duty
+	else __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, PWM_OFF_DUTY); // set pwm duty
+}
+
+uint32_t tim_2_get_value(void)
+{
+	return __HAL_TIM_GET_COUNTER(&htim2);
+}
+
+void tim_2_set_period(uint32_t period)
+{
+	__HAL_TIM_SET_AUTORELOAD(&htim2, period);
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+    if(htim->Instance == TIM2)
+    {
+    	// motor_drive --> interrupt függvénye
+    	motor_update_timer();
+    }
+
 }
 /* USER CODE END 4 */
 

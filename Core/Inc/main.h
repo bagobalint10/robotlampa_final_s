@@ -41,7 +41,8 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-
+  	#define PWM_ON_DUTY 10
+	#define PWM_OFF_DUTY 0
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -56,12 +57,23 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 void usart_transmit(uint8_t *data);
+void tim_2_set_duty(uint8_t duty);
+uint32_t tim_2_get_value(void);
+void tim_2_set_period(uint32_t period);
 
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
 #define LED_Pin GPIO_PIN_13
 #define LED_GPIO_Port GPIOC
+#define MOTOR_1_PULSE_Pin GPIO_PIN_0
+#define MOTOR_1_PULSE_GPIO_Port GPIOA
+#define MOTOR_2_PULSE_Pin GPIO_PIN_1
+#define MOTOR_2_PULSE_GPIO_Port GPIOA
+#define MOTOR_2_DIRECTION_Pin GPIO_PIN_2
+#define MOTOR_2_DIRECTION_GPIO_Port GPIOA
+#define MOTOR_1_DIRECTION_Pin GPIO_PIN_3
+#define MOTOR_1_DIRECTION_GPIO_Port GPIOA
 #define SR_LATCH_Pin GPIO_PIN_12
 #define SR_LATCH_GPIO_Port GPIOA
 #define SR_CLOCK_Pin GPIO_PIN_15
