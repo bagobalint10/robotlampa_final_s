@@ -36,7 +36,7 @@
     tmp_current_time = HAL_GetTick();
 
     static uint32_t tmp_time_0 = 0;
-    static uint16_t tmp_interval_0 = 10000;	//10mp
+    static uint16_t tmp_interval_0 = 5000;	//10mp
 
     if ((uint32_t)(tmp_current_time - tmp_time_0)>= tmp_interval_0)
     {
@@ -44,7 +44,7 @@
 
  	   // dmx pozíció változtatása
  	   if(dmx_pos) dmx_pos = 0;
- 	   else  dmx_pos = 10000;
+ 	   else  dmx_pos = 1000;
  	   //
     }
  }

@@ -11,7 +11,7 @@
 
 	#include "stm32f4xx_hal.h"
 
-	void motor_1_init(void);
+
 	void motor_1_main(uint16_t dmx_pos_1);
 	void motor_update_timer(void);
 
