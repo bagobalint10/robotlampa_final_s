@@ -5,10 +5,8 @@
  *  Author: bagob
  */ 
 
- #include <interrupt_s.h>
-#include "buttons.h"
-
-
+ #include <buttons_s.h>
+#include <interrupt_s.h>
  #include "stddef.h"
 
 

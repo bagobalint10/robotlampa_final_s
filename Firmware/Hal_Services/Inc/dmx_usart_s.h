@@ -11,13 +11,12 @@
 
 	#include "stm32f4xx_hal.h"
 	
-	//void dmx_usart_init(void);
 	void dmx_usart_send(void);
 	void usart_rx_fe_callback(void);
 	void usart_rx_callback(uint8_t data);
 
 	extern uint8_t *dmx_adress_pointer;
-	 extern uint8_t dmx_array[512];
+	extern uint8_t dmx_array[512];
 
 
 

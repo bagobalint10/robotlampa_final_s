@@ -5,10 +5,10 @@
  *      Author: bagob
  */
 
- #include <my_main.h>
+ #include <control_board_s.h>
+#include <my_main.h>
 
- #include<control_board.h>
- #include<dmx_usart.h>
+ #include <dmx_usart_s.h>
 
 
  void my_main_init(void)

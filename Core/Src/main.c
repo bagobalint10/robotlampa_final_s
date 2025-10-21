@@ -17,13 +17,13 @@
   */
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
+#include <dmx_usart_s.h>
 #include "main.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <my_main.h>
 #include <interrupt_s.h>
-#include <dmx_usart.h>
 
 /* USER CODE END Includes */
 
@@ -402,11 +402,6 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
   if (huart->Instance == USART1)
   {
-    // Például visszaküldjük, amit kaptunk
-
-    //HAL_UART_Transmit(&huart2, tx_buffer, strlen((char*)tx_buffer), HAL_MAX_DELAY);
-
-    // Újraindítjuk a fogadást
 	  usart_rx_callback(rx_buffer);
 	  HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);
   }
@@ -416,25 +411,14 @@ void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
     if (huart->Instance == USART1)
     {
-    	// HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_2);
-
-        //if ((__HAL_UART_GET_FLAG(huart, UART_FLAG_FE)))  // Frame Error = BREAK
-        //{
-            // új frame kezdete
-            //dmx_index = 0;
-
         	usart_rx_fe_callback();
-
-            //__HAL_UART_CLEAR_FLAG(huart, UART_FLAG_FE);
-
             HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);
-        //}
     }
 }
 
 void usart_transmit(uint8_t *data)
 {
-	HAL_UART_Transmit(&huart1, data, 1, HAL_MAX_DELAY);
+	HAL_UART_Transmit(&huart1, data, 1, 10);
 }
 /* USER CODE END 4 */
 

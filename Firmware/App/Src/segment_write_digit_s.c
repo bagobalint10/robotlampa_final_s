@@ -6,7 +6,7 @@
  */ 
  
   
-#include "segment_write_digit.h"
+#include <segment_write_digit_s.h>
 
 
 // priv�t functions S

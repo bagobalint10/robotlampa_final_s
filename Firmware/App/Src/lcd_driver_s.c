@@ -5,9 +5,8 @@
  *  Author: bagob
  */ 
 
- #include "lcd_driver.h"
-
- #include "segment_write_digit.h"
+ #include <lcd_driver_s.h>
+#include <segment_write_digit_s.h>
  #include "timer_s.h"
 
  static uint8_t interval_time = 0;

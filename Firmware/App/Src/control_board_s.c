@@ -5,15 +5,14 @@
  *  Author: bagob
  */ 
 
- #include <eepromh_s.h>
- #include "control_board.h"
-
- #include "buttons.h"
-
- #include "lcd_driver.h"
- #include "relay.h"
- #include <dmx_usart.h>
-
+ #include <buttons_s.h>
+#include <control_board_s.h>
+#include <dmx_usart_s.h>
+#include <eepromh_s.h>
+#include <lcd_driver_s.h>
+#include <relay_s.h>
+  
+   
  //glob�lis v�ltoz�k
 
  //
@@ -399,8 +398,8 @@ static uint8_t lamp_count = 0;
 	buttons_init(10); //debounce time in ms
 	set_buttons_variables(&bt_up, &bt_down, &bt_enter, &bt_mode);
 	lcd_init(4);	// 4x4 = 16ms refresh time 
-	//relay_init();
 	dmx_adress_pointer = (dmx_array+(dmx_adress));
+
 	// eeprom kiolvas�s
 	/*lamp_cold_f = eeprom_read_byte(2);
 	dmx_adress = eeprom_read_byte(0);
