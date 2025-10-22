@@ -1,0 +1,21 @@
+
+
+		1  -	strobe (64-50)
+		2  -	Dimmer
+		3  -	Color
+		4  -	Gobo
+		5  -	Gobo rot 
+		6  -	Gobo fine
+		7  -	Iris
+		8  -	Focus
+		9  -	Macro1
+		10 -	Macro2
+		11 -	Pan
+		12 -	Pan_fine
+		13 -	Tilt
+		14 -	Tilt_fine
+		15 -	P/T speed
+		16 -	Effect speed
+		17 -	?
+		
+		
