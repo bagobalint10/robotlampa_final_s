@@ -74,6 +74,15 @@ void tim_2_set_period(uint32_t period);
 #define MOTOR_2_DIRECTION_GPIO_Port GPIOA
 #define MOTOR_1_DIRECTION_Pin GPIO_PIN_3
 #define MOTOR_1_DIRECTION_GPIO_Port GPIOA
+#define HALL_3_Pin GPIO_PIN_5
+#define HALL_3_GPIO_Port GPIOA
+#define HALL_3_EXTI_IRQn EXTI9_5_IRQn
+#define HALL_2_Pin GPIO_PIN_0
+#define HALL_2_GPIO_Port GPIOB
+#define HALL_2_EXTI_IRQn EXTI0_IRQn
+#define HALL_1_Pin GPIO_PIN_1
+#define HALL_1_GPIO_Port GPIOB
+#define HALL_1_EXTI_IRQn EXTI1_IRQn
 #define SR_LATCH_Pin GPIO_PIN_12
 #define SR_LATCH_GPIO_Port GPIOA
 #define SR_CLOCK_Pin GPIO_PIN_15
