@@ -13,7 +13,7 @@
 	#include "stm32f4xx_hal.h"
 	#include "main.h"
 
-	void control_board_main(void);
+	uint8_t  control_board_main(void);
 	void control_board_init(void);
 
 

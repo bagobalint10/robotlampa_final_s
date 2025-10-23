@@ -14,6 +14,7 @@
 
 	void motor_1_main(uint16_t dmx_pos_1, uint8_t dmx_speed);
 	void motor_update_timer(void);
+	void motor_1_set_0_pos(void);
 
 
 

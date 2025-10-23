@@ -11,6 +11,8 @@
 #include <eepromh_s.h>
 #include <lcd_driver_s.h>
 #include <relay_s.h>
+#include <motor_drive.h>
+#include <motor_2_drive.h>
   
    
  //glob�lis v�ltoz�k
@@ -32,7 +34,7 @@
   static uint8_t lcd_dot_buffer[4] = {0,0,0,0};
   static uint8_t lcd_enable = 1;
 
-static int menu_n = 1;				// 0-3 f�men�
+static int menu_n = 0;				// 0-3 f�men�
 static uint8_t sub_menu_f = 0;
 static int sub_menu_n = 0;
 
@@ -41,7 +43,50 @@ static uint8_t dmx_menu_blink = 0;
 static uint8_t lamp_cold_f = 0;  // 0-nem --> heat = lamp_wait , 1 igen, (szabad e ind�tani) 
 static uint8_t lamp_count = 0;
 
+static void reset(void)
+{
+	// menu_n -t majd 0 ból indítani
+	// fellül írni alap funkciókat: pl dmx jelből jövőket
+	// fix értékekkel fusson le a motorvezérlés
+	// álljon be 0 rá aztán go
+	// ha leresetelődött --> menu_n++;
 
+	uint8_t hall1 = HAL_GPIO_ReadPin(HALL_1_GPIO_Port, HALL_1_Pin);
+	uint8_t hall2 = HAL_GPIO_ReadPin(HALL_2_GPIO_Port, HALL_2_Pin);
+	uint8_t hall3 = HAL_GPIO_ReadPin(HALL_3_GPIO_Port, HALL_3_Pin);
+
+	static uint8_t motor_1_f = 0;
+	static uint8_t motor_2_f = 0;
+
+	if(!hall2 && !hall3 )  //2+3
+	{
+		// reset motor 1 state - pan
+		if(!motor_1_f)
+		{
+			motor_1_f = 1;
+			motor_1_set_0_pos();
+		}
+
+		//menu_n++;
+		//HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, 1); //mikor 1 mikor 0?
+		//menu_n++;
+	}
+	if(!hall1)
+	{
+		// reset motor 2 state - tilt
+		if(!motor_2_f)
+				{
+					motor_2_f = 1;
+					motor_2_set_0_pos();
+				}
+		//HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, 1);
+	}
+	if(motor_1_f && motor_2_f) // minden alap helyzetben
+	{
+		menu_n++;
+	}
+
+}
  static void push_string(void)										//--------------------------
  {
 
@@ -186,7 +231,7 @@ static uint8_t lamp_count = 0;
 	switch(menu_n)	// --> ha "r�l�ptem" az adott men�pontra 
 	{
 	case 0:		// reset 
-				// reset();
+				reset();
 				// kil�p�s --> reset �ll�tja a flaget 
 				break;
 
@@ -232,6 +277,8 @@ static uint8_t lamp_count = 0;
 					dmx_menu_blink = 0;
 					
 				} 
+				if(menu_n < 1) menu_n = 1;
+				if(menu_n > 2) menu_n = 2;
 				break;
 
 	case 2:		// LAMP
@@ -250,13 +297,14 @@ static uint8_t lamp_count = 0;
 					if(up_f) menu_n--;			// UP-DOWN -->  menu_n
 					if(down_f) menu_n++;
 				}
+				if(menu_n < 1) menu_n = 1;
+				if(menu_n > 2) menu_n = 2;
 				break;
 	default: break;
 	}
 
 	// Overflow guard
-	if(menu_n < 1) menu_n = 1;
-	if(menu_n > 2) menu_n = 2;
+
 
 	if(sub_menu_n < 0) sub_menu_n = 0;
 	if(sub_menu_n > 1) sub_menu_n = 1;
@@ -409,11 +457,12 @@ static uint8_t lamp_count = 0;
 
  }
 
- void control_board_main(void) // ideiglenes sketchi verzio
+ uint8_t control_board_main(void) // ideiglenes sketchi verzio
  {
 	button_read(); // kiolvas�s
 	menu();	 // gomb -->  string , dot, enable
 	lcd_write_buffer(lcd_buffer,lcd_dot_buffer,lcd_enable);	
+	return menu_n; // reset state megnézése mainban
  }
    
 

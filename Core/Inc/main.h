@@ -57,9 +57,14 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 void usart_transmit(uint8_t *data);
+//
 void tim_2_set_duty(uint8_t duty);
 uint32_t tim_2_get_value(void);
 void tim_2_set_period(uint32_t period);
+//
+void tim_5_set_duty(uint8_t duty);
+uint32_t tim_5_get_value(void);
+void tim_5_set_period(uint32_t period);
 
 /* USER CODE END EFP */
 

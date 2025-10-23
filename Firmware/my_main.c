@@ -10,6 +10,7 @@
 
  #include <dmx_usart_s.h>
  #include <motor_drive.h>
+ #include <motor_2_drive.h>
 
 
  //uint16_t dmx_pos = 0;
@@ -25,7 +26,7 @@
  static uint16_t dmx_pan_value = 0;
  static uint16_t dmx_tilt_value = 0;
  static uint8_t  dmx_speed_value = 0;
-
+ static uint8_t reset_f = 0; // 0--reset,  > 0 fut a program
  void dmx_channel_map(void);
 
 
@@ -38,22 +39,24 @@
 
  void my_main_loop(void)
  {
-	 control_board_main();
-	// dmx_usart_send();
-	 motor_1_main(dmx_pan_value,dmx_speed_value); // dmx pos*2 bemenő uint32t
-	 tmp_timer();
-	 dmx_channel_map();
+	 reset_f = control_board_main();
+	 // dmx_usart_send();
+	 //tmp_timer();
 
+	 if(reset_f)
+	 {
+		 dmx_channel_map(); 	// normál futás
+		 motor_1_main(dmx_pan_value,  dmx_speed_value);
+		 motor_2_main(dmx_tilt_value, dmx_speed_value);
+		 // motor_2
+	 }
+	 else
+	 {
+		 motor_1_main(0 , 0); 	// 0 speed, 0 pos resethez
+		 motor_2_main(0 , 0); 	// 0 speed, 0 pos resethez
+		 	 	 	 	 		// reset state
+	 }
 
-
-
-	 // dmx mapping
-	 //dmx_pos = ((uint16_t)dmx_array[4]<<8)  | ((uint16_t)dmx_array[5]);//+5
-	 //dmx_pos = ;//+5
-	 //tmp_speed = 255- dmx_array[3];
-	 //dmx_pos = ((uint16_t)(*(dmx_adress_pointer + 3))<<8) & (uint16_t)*(dmx_adress_pointer + 4);
-	 /*extern uint8_t *dmx_adress_pointer;
-	 extern uint8_t dmx_array[512];*/
 
  }
 
@@ -62,6 +65,7 @@
 
 	dmx_pan_value = ((uint16_t)*(dmx_adress_pointer + (PAN_CH-1))<<8)  | ((uint16_t)*(dmx_adress_pointer + (PAN_F_CH-1)));
 	dmx_tilt_value = ((uint16_t)*(dmx_adress_pointer + (TILT_CH-1))<<8)  | ((uint16_t)*(dmx_adress_pointer + (TILT_F_CH-1)));
+	dmx_tilt_value =  (dmx_tilt_value >> 1);
 	dmx_speed_value = *(dmx_adress_pointer + (PT_SPEED_CH-1));
  }
 
