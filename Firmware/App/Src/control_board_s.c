@@ -10,9 +10,9 @@
 #include <dmx_usart_s.h>
 #include <eepromh_s.h>
 #include <lcd_driver_s.h>
+#include <motor_1_drive_s.h>
+#include <motor_2_drive_s.h>
 #include <relay_s.h>
-#include <motor_drive.h>
-#include <motor_2_drive.h>
   
    
  //glob�lis v�ltoz�k

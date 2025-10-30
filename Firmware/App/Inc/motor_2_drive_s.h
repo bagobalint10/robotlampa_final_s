@@ -5,8 +5,8 @@
  *      Author: bagob
  */
 
-#ifndef APP_INC_MOTOR_2_DRIVE_H_
-#define APP_INC_MOTOR_2_DRIVE_H_
+#ifndef APP_INC_MOTOR_2_DRIVE_S_H_
+#define APP_INC_MOTOR_2_DRIVE_S_H_
 
 	#include "stm32f4xx_hal.h"
 
@@ -17,4 +17,4 @@
 
 
 
-#endif /* APP_INC_MOTOR_2_DRIVE_H_ */
+#endif /* APP_INC_MOTOR_2_DRIVE_S_H_ */

@@ -1,13 +1,12 @@
 /*
- * motor_drive.c
+ * motor_2_drive.c
  *
- * Created: 2025. 10. 14. 16:33:07
- *  Author: bagob
- */ 
+ *  Created on: Oct 23, 2025
+ *      Author: bagob
+ */
 
- #include "motor_drive.h"
-
- #include "main.h"
+ #include <motor_2_drive_s.h>
+#include "main.h"
  #include "math.h"
 
 
@@ -47,8 +46,8 @@
  static uint8_t direction = 0;
  static uint8_t motor_enable = 0;
 
-			
- // private 
+
+ // private
  static uint32_t  calculate_time()
  {
 
@@ -129,14 +128,14 @@
 
  //public
 
- void motor_update_timer(void)
+ void motor_2_update_timer(void)
  {
 	// motor sebedseg szabalyzas
 	 static uint32_t d_t = 0;
-	
-	if(motor_enable && direction)  
+
+	if(motor_enable && direction)
 	{
-		pos_diff = (input_pos - current_pos)-1;		// -1 hogy ne l�pjen 1 el t�bbet ! 
+		pos_diff = (input_pos - current_pos)-1;		// -1 hogy ne l�pjen 1 el t�bbet !
 
 		if ((pos_diff > current_level) && (current_level < max_speed_level))	  	// gyorsítás
 		{
@@ -152,11 +151,11 @@
 		current_pos++;
 
 		if(!d_t) d_t = DT_0;					// mintavételezése idő
-		tim_2_set_period(d_t);
+		tim_5_set_period(d_t);
 	}
 	else if(motor_enable && (!direction))
 	{
-		pos_diff = (current_pos - input_pos)-1 ;	// -1 hogy ne l�pjen 1 el t�bbet !	
+		pos_diff = (current_pos - input_pos)-1 ;	// -1 hogy ne l�pjen 1 el t�bbet !
 
 		if ((pos_diff > current_level) && (current_level < max_speed_level))
 		{
@@ -173,17 +172,17 @@
 
 
 		if(!d_t) d_t = DT_0;					// mintavételezése idő
-		tim_2_set_period(d_t);					// timer kompar�l�si ovf �rt�k --> frek frisst�s
-	} 
+		tim_5_set_period(d_t);					// timer kompar�l�si ovf �rt�k --> frek frisst�s
+	}
 
-	if ((!current_level) && motor_enable)			// ha lenull�z�dott a sebess�g  
+	if ((!current_level) && motor_enable)			// ha lenull�z�dott a sebess�g
 	{
-	motor_enable = 0;								// motor tilt�sa -> main b�l lehet �jra ind�tani 
-	} 
+	motor_enable = 0;								// motor tilt�sa -> main b�l lehet �jra ind�tani
+	}
  }
 
 
- void motor_1_main(uint16_t dmx_pos_1, uint8_t dmx_speed)
+ void motor_2_main(uint16_t dmx_pos_1, uint8_t dmx_speed)
  {
 	uint32_t tim_state;									// timer jelenlegi �ll�sa
 	uint16_t motor_enable_buf;							// timer-enable, szinkroniz�l�s --> bufferel�s
@@ -192,11 +191,11 @@
 	//input_pos = ZERO_POS;
 	motor_enable_buf = motor_enable;
 
-	tim_state = tim_2_get_value(); // kiolvasni a timer �rt�k�t
+	tim_state = tim_5_get_value(); // kiolvasni a timer �rt�k�t
 
 	if((!motor_enable_buf) && (input_pos != current_pos) && ( tim_state > PWM_ON_DUTY) && ( tim_state < DT_0))	// �ll a motor + menni k�ne + timer kimenete = 0;
-	{	
-		//motor ind�t�s + ir�ny meghat�roz�s																												// < time_level[0] --> ovf interrupt ut�n m�g  
+	{
+		//motor ind�t�s + ir�ny meghat�roz�s																												// < time_level[0] --> ovf interrupt ut�n m�g
 		if(input_pos>current_pos)	direction = 1;		// pozitiv  // ir�ny meghat�roz�s
 		else 						direction = 0;		// negat�v
 
@@ -204,23 +203,23 @@
 
 		calculate_speed(dmx_speed);
 
-		HAL_GPIO_WritePin(MOTOR_1_DIRECTION_GPIO_Port, MOTOR_1_DIRECTION_Pin, direction);
-		tim_2_set_duty(1);// PWM kimenet enged�lyez�se
-				
-	}else if((!motor_enable_buf) && ( tim_state > PWM_ON_DUTY) && ( tim_state < DT_0) )
-	{	  
-		// timer kimenet letilt�sa --> motor stop 
+		HAL_GPIO_WritePin(MOTOR_2_DIRECTION_GPIO_Port, MOTOR_2_DIRECTION_Pin, (!direction));
+		tim_5_set_duty(1);// PWM kimenet enged�lyez�se
 
-		tim_2_set_duty(0);// PWM lev�laszt�sa
+	}else if((!motor_enable_buf) && ( tim_state > PWM_ON_DUTY) && ( tim_state < DT_0) )
+	{
+		// timer kimenet letilt�sa --> motor stop
+
+		tim_5_set_duty(0);// PWM lev�laszt�sa
 
 	}
  }
 
- void motor_1_set_0_pos(void) // hall hatására fut le --> resetből!!!!
+ void motor_2_set_0_pos(void) // hall hatására fut le --> resetből!!!!
  {
 	 current_pos = ZERO_POS;
 	 current_level = 50;
  }
 
 
- 
+
