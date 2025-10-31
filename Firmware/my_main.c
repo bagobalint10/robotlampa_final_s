@@ -22,7 +22,7 @@
  static uint16_t dmx_pan_value = 0;
  static uint16_t dmx_tilt_value = 0;
  static uint8_t  dmx_speed_value = 0;
- static uint8_t reset_f = 0; 			// 0--reset,  > 0 fut a program
+ static uint8_t  reset_f = 0; 			// 0--reset,  > 0 fut a program
 
  void dmx_channel_map(void);
 
@@ -46,7 +46,7 @@
 		 motor_1_main(dmx_pan_value,  dmx_speed_value);
 		 motor_2_main(dmx_tilt_value, dmx_speed_value);
 	 }
-	 else						// reset state
+	 else						// reset
 	 {
 		 motor_1_main(0 , 0); 	// 0 speed, 0 pos resethez
 		 motor_2_main(0 , 0); 	// 0 speed, 0 pos resethez
