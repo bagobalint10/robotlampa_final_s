@@ -12,30 +12,30 @@
 
 // 	s görbe számoláshoz paraméterek
 //	bemenő paraméterek
-		static uint32_t curve_n_used = 9000; 	// ennyi lépés alatt gyorsul v max ra
-		static float curve_bottom = 0.35f; 		// 0-1 közötti szám
-		static float curve_top = 1.0f;
-		static float v_max = 100.54451f;				//50 -100?
+		//static uint32_t curve_n_used = 9000; 	// ennyi lépés alatt gyorsul v max ra
+		//static float curve_bottom = 0.35f; 		// 0-1 közötti szám
+		//static float curve_top = 1.0f;
+		//static float v_max = 100.54451f;				//50 -100?
 		//static float start_speed_s= 400 ;				// ezt majd állítani kéne v0 kezdeti sebesség eltolása
-		static float start_speed_v = 1.00f ;// kiszámolni
+		//static float start_speed_v = 1.00f ;// kiszámolni
 // változók
 
  #define ZERO_POS 100
  #define MAX_POS 100000UL
 //#define MAX_SPEED_LEVEL 6000 // ez számított
  #define T_MAX 109.54451f
- #define DT_0 840000UL 			// 10ms
+ #define DT_0 84000UL 			// 10ms
  //#define TIMER_CONST 644095.0f	// 1/16 max speed --> dt = 70us
  #define TIMER_CONST 322047.0f	// 1/32 max speed --> dt = 70us
 
 
  static uint32_t max_speed_level = 30000;// ez majd lehet nem kell -- ideiglenesen
- static float curve_max_speed = 0.0f;
- static uint32_t curve_n = 0;
- static float v_bottom = 0;
- static float v_top = 0;
- static uint32_t curve_level_bottom = 0;
- static uint32_t curve_level_top = 0;
+ //static float curve_max_speed = 0.0f;
+ //static uint32_t curve_n = 0;
+ //static float v_bottom = 0;
+ //static float v_top = 0;
+ //static uint32_t curve_level_bottom = 0;
+ //static uint32_t curve_level_top = 0;
 ///
  static int32_t current_level = 0;
  static int32_t input_pos = 0;		// bemenet --> majd �ttenni 32 bitesre �ket
@@ -45,12 +45,21 @@
 
  static uint8_t direction = 0;
  static uint8_t motor_enable = 0;
+ //
+
+ static uint32_t n_max = 30000; //min 8000 - max 30000
+ static float v_max = 80.0f; // min 20 - max 80
+ static float v_start = 1.5f; //min 0.2 - max 1.5  --> 10ms
+ static float k_mul   = 0;
+ static float r_max   = 0;  	// hogy a végeredmény 0-1 közé essen
+ #define SYMMETRY_CONST 0.1f //0.1-0.5
+
 
 
  // private
- static uint32_t  calculate_time()
+ static uint32_t  calculate_time(uint32_t n)
  {
-
+/*
 	 float tmp_ss, v_s;
 	 float dt;
 
@@ -69,15 +78,45 @@
 	 dt = (1/v_s); 				// dt számolása v_s ből
 
 	 dt *= TIMER_CONST; 		// timer hez illesztés
-	 return (uint32_t) dt;
+	 return (uint32_t) dt;*/
+	 float v_s;
+	 	 // többi
+
+	 	 if(!n) return 0; 					//0 sebességnál 0
+	 	 else if(n > n_max) v_s = v_max ;	//max sebesség felett = max
+	 	 else
+	 	 {
+	 		 float k 	= ((float)(n_max - n) * k_mul) + 1.0f;				// korrigáció
+	 		 float r_n 	= sqrtf((float)n) * k / r_max;    							// gyök n + korrigáció
+	 		 v_s 		= ((3.0f*r_n*r_n)-( 2.0f*r_n*r_n*r_n)) * v_max;	// s görbe számítás
+	 	 }
+
+	 	 v_s += v_start;
+	 	 float dt = 1.0f / v_s;
+
+	 	 dt *= TIMER_CONST; 		// timer hez illesztés
+
+	 	 return (uint32_t) dt;
 
 
  }
 
  static void calculate_speed(uint8_t speed)
  {
-	 // gyorsulás kalkulálás, továbbadás + max_s számolás
+	 // calculate speed v2
+	 	 // speed ből --> n_max, v_max, v_start
 
+	 	 n_max = 8000 + ((uint32_t)((float)speed/255.0f)*12000); //min 8000 - max 30000
+	 	 v_max = 20.0f + (((float)speed/255.0f)*60.0f); // min 20 - max 80
+	 	 v_start = 0.2f +(((float)speed/255.0f)*0.8f); //min 0.2 - max 1.5  --> 10ms
+
+
+
+	 	 k_mul   = (SYMMETRY_CONST / (float)n_max);
+	 	 r_max   = sqrtf((float)n_max);  	// hogy a végeredmény 0-1 közé essen
+	 	 max_speed_level = n_max;
+	 // gyorsulás kalkulálás, továbbadás + max_s számolás
+/*
 	if(speed) // normál
 	{
 		// egész smooth beállítás
@@ -96,7 +135,7 @@
 
 		v_max = 16.54451f; 				//50 -100?
 		start_speed_v = 0.4f; //0.4=10ms   -  0.76 = 5ms
-	}
+	}*/
 
 /*
 		// egész smooth beállítás
@@ -108,22 +147,23 @@
 	 		start_speed_v = 0.4f; //0.4=10ms   -  0.76 = 5ms*/
 
 
-
+/*
 	curve_n =(uint32_t)((float)curve_n_used/(curve_top-curve_bottom));
 	curve_max_speed = v_max;
 	curve_level_top = (uint32_t)(curve_top *(float) curve_n);// felső szám érték kiszámolás
 	curve_level_bottom = (uint32_t)(curve_bottom *(float)curve_n);
-	/*	v0
+	*//*	v0
 	float tmp_ss = (float)(curve_level_bottom - START_SPEED_S)/curve_n ;     //
 	v_bottom =  curve_max_speed * ((3.0f*(tmp_ss * tmp_ss))-(2.0f*(tmp_ss * tmp_ss * tmp_ss))); //v_s számolása
 	 */
 	// v1
-	float tmp_ss = (float)(curve_level_bottom)/curve_n ;     //
+/*	float tmp_ss = (float)(curve_level_bottom)/curve_n ;     //
 	v_bottom =  curve_max_speed * ((3.0f*(tmp_ss * tmp_ss))-(2.0f*(tmp_ss * tmp_ss * tmp_ss))); //v_s számolása
 
 	tmp_ss = (float)(curve_level_top)/curve_n ;         //  s/smax
 	v_top =  curve_max_speed * ((3.0f*(tmp_ss * tmp_ss))-(2.0f*(tmp_ss * tmp_ss * tmp_ss))); //v_s számolása
 	v_top = v_top - v_bottom;
+	*/
  }
 
  //public
@@ -140,12 +180,12 @@
 		if ((pos_diff > current_level) && (current_level < max_speed_level))	  	// gyorsítás
 		{
 			current_level++;
-			d_t = calculate_time();
+			d_t = calculate_time(current_level);
 		}
 		else if((pos_diff < current_level) && (current_level > 0))
 		{
 			current_level--;				// lassítás
-			d_t = calculate_time();
+			d_t = calculate_time(current_level);
 		}
 
 		current_pos++;
@@ -160,12 +200,12 @@
 		if ((pos_diff > current_level) && (current_level < max_speed_level))
 		{
 			current_level++;
-			d_t = calculate_time();
+			d_t = calculate_time(current_level);
 		}
 		else if((pos_diff < current_level) && (current_level > 0))
 		{
 			current_level--;				// lassítás
-			d_t = calculate_time();
+			d_t = calculate_time(current_level);
 		}
 
 		current_pos--;
