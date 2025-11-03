@@ -107,25 +107,18 @@ int main(void)
 
 
   my_main_init();
-  //HAL_TIM_PWM_Start_IT(&htim2, TIM_CHANNEL_1);
-  //HAL_TIM_Base_Start_IT(&htim2); //vagy ez
+
   HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);
   HAL_TIM_Base_Start_IT(&htim2);
   HAL_TIM_Base_Start_IT(&htim5);
 
   __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, PWM_ON_DUTY); // set pwm duty
-  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);		// start tim2 pwm channel
-  htim2.Instance->CR1 &= ~TIM_CR1_ARPE; // ARPE = 0 → shadow OFF
+  HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);					 // start tim2 pwm channel
+  htim2.Instance->CR1 &= ~TIM_CR1_ARPE; 					 // ARPE = 0 → shadow OFF
 
   __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, PWM_ON_DUTY); // set pwm duty
-  HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);		// start tim2 pwm channel
-  htim5.Instance->CR1 &= ~TIM_CR1_ARPE; // ARPE = 0 → shadow OFF
-
-
-  //HAL_TIM_Base_Start_IT(&htim5);
-
-
-
+  HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);					 // start tim5 pwm channel
+  htim5.Instance->CR1 &= ~TIM_CR1_ARPE; 					 // ARPE = 0 → shadow OFF
 
   /* USER CODE END 2 */
 
@@ -401,28 +394,27 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)			// gombok interrupt callback
 {
 	ISR_GPIO_EXTI_Callback(GPIO_Pin);
-
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  if (huart->Instance == USART1)
-  {
-	  usart_rx_callback(rx_buffer);
-	  HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);
-  }
+	if (huart->Instance == USART1)						// usart 1 receive
+	{
+		usart_rx_callback(rx_buffer);					// --> dmx_usart, feldolgozás
+		HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);	// start IT
+	}
 }
 
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
 {
-    if (huart->Instance == USART1)
-    {
-        	usart_rx_fe_callback();
-            HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);
-    }
+	if (huart->Instance == USART1)						// usart 1 error callback
+	{
+		usart_rx_fe_callback();							// --> dmx_usart, reset frame
+		HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);	// start IT
+	}
 }
 
 void usart_transmit(uint8_t *data)
@@ -432,9 +424,8 @@ void usart_transmit(uint8_t *data)
 
 void tim_2_set_duty(uint8_t duty)
 {
-	if(duty) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, PWM_ON_DUTY); // set pwm duty
-	else 	 __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, PWM_OFF_DUTY); // set pwm duty
-
+	if(duty) __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, PWM_ON_DUTY);
+	else 	 __HAL_TIM_SET_COMPARE(&htim2, TIM_CHANNEL_1, PWM_OFF_DUTY);
 }
 
 uint32_t tim_2_get_value(void)
@@ -447,38 +438,35 @@ void tim_2_set_period(uint32_t period)
 	__HAL_TIM_SET_AUTORELOAD(&htim2, period);
 }
 
-// tim 5
-void tim_5_set_duty(uint8_t duty)
-{
-	if(duty) __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, PWM_ON_DUTY); // set pwm duty
-	else 	 __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, PWM_OFF_DUTY); // set pwm duty
-
-}
-
 uint32_t tim_5_get_value(void)
 {
 	return __HAL_TIM_GET_COUNTER(&htim5);
+}
+
+void tim_5_set_duty(uint8_t duty)
+{
+	if(duty) __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, PWM_ON_DUTY);
+	else 	 __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, PWM_OFF_DUTY);
 }
 
 void tim_5_set_period(uint32_t period)
 {
 	__HAL_TIM_SET_AUTORELOAD(&htim5, period);
 }
-//
+
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if(htim->Instance == TIM2)
     {
-    	// motor_drive --> interrupt függvénye
-    	motor_update_timer();
+    	// motor_1_drive --> interrupt függvénye
+    	motor_1_update_timer();
     }
 
     if(htim->Instance == TIM5)
 	{
-		// motor_drive --> interrupt függvénye
+		// motor_2_drive --> interrupt függvénye
 		motor_2_update_timer();
 	}
-
 }
 /* USER CODE END 4 */
 

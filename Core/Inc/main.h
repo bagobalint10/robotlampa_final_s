@@ -41,8 +41,8 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-  	#define PWM_ON_DUTY 420 //5us
-	#define PWM_OFF_DUTY 0
+#define PWM_ON_DUTY 420 	//5us
+#define PWM_OFF_DUTY 0
 /* USER CODE END EC */
 
 /* Exported macro ------------------------------------------------------------*/
@@ -57,14 +57,14 @@ void Error_Handler(void);
 
 /* USER CODE BEGIN EFP */
 void usart_transmit(uint8_t *data);
-//
+
 void tim_2_set_duty(uint8_t duty);
-uint32_t tim_2_get_value(void);
 void tim_2_set_period(uint32_t period);
-//
+uint32_t tim_2_get_value(void);
+
 void tim_5_set_duty(uint8_t duty);
-uint32_t tim_5_get_value(void);
 void tim_5_set_period(uint32_t period);
+uint32_t tim_5_get_value(void);
 
 /* USER CODE END EFP */
 

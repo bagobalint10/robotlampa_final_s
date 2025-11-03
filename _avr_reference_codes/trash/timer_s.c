@@ -7,13 +7,12 @@
 
  #include <timer_s.h>
 
-////  public
 
-  void set_timer_1_ovf_value(uint64_t ovf_value)
-  {
-	  //ICR1 = ovf_value;
+void set_timer_1_ovf_value(uint64_t ovf_value)
+{
+  //ICR1 = ovf_value;
 
-  }
+}
 
   uint16_t get_timer_1_value(void)
   {

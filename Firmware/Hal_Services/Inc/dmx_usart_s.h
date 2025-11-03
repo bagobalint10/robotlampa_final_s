@@ -18,6 +18,4 @@
 	extern uint8_t *dmx_adress_pointer;
 	extern uint8_t dmx_array[512];
 
-
-
 #endif /* DMX_USART_H_ */

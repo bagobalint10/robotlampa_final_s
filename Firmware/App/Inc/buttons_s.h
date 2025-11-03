@@ -16,5 +16,4 @@
 	void set_buttons_variables(uint8_t *button_0, uint8_t *button_1, uint8_t *button_2, uint8_t *button_3 );
 	void button_read(void);
 
-
 #endif /* BUTTONS_H_ */

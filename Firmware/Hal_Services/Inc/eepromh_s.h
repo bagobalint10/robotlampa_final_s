@@ -13,6 +13,4 @@
 	void eeprom_write_byte(unsigned int uiAddress, uint8_t ucData);
 	uint32_t eeprom_read(void);
 
-
-
 #endif /* EEPROMH_H_ */

@@ -13,8 +13,5 @@
 	#include "main.h"
 
  	void segment_write_digit(uint8_t digit, uint8_t kar, uint8_t dot, uint8_t enable);
- 	//void segment_Init(void);
-
-
 
 #endif /* SEGMENT_WRITE_DIGIT_H_ */
