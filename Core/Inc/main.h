@@ -85,6 +85,8 @@ uint32_t tim_5_get_value(void);
 #define HALL_2_GPIO_Port GPIOB
 #define HALL_1_Pin GPIO_PIN_1
 #define HALL_1_GPIO_Port GPIOB
+#define RELAY_ENABLE_Pin GPIO_PIN_12
+#define RELAY_ENABLE_GPIO_Port GPIOB
 #define SR_LATCH_Pin GPIO_PIN_12
 #define SR_LATCH_GPIO_Port GPIOA
 #define SR_CLOCK_Pin GPIO_PIN_15

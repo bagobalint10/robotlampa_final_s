@@ -119,6 +119,7 @@ int main(void)
   __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, PWM_ON_DUTY); // set pwm duty
   HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);					 // start tim5 pwm channel
   htim5.Instance->CR1 &= ~TIM_CR1_ARPE; 					 // ARPE = 0 → shadow OFF
+  HAL_GPIO_WritePin(RELAY_ENABLE_GPIO_Port, RELAY_ENABLE_Pin, 0);
 
   /* USER CODE END 2 */
 
@@ -344,6 +345,9 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOA, MOTOR_2_DIRECTION_Pin|MOTOR_1_DIRECTION_Pin|SR_LATCH_Pin|SR_CLOCK_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(RELAY_ENABLE_GPIO_Port, RELAY_ENABLE_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(GPIOB, SR_DATA_Pin|RELAY_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : LED_Pin */
@@ -371,6 +375,13 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : RELAY_ENABLE_Pin */
+  GPIO_InitStruct.Pin = RELAY_ENABLE_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(RELAY_ENABLE_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : SR_DATA_Pin RELAY_Pin */
   GPIO_InitStruct.Pin = SR_DATA_Pin|RELAY_Pin;
