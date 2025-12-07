@@ -6,6 +6,7 @@
  */ 
 
 #include <dmx_usart_s.h>
+
 #include "main.h"
 
 #define DMX_RESET_TIME 15
@@ -22,17 +23,16 @@ void usart_rx_callback(uint8_t data)
 {
 	dmx_array[dmx_receive_num] = data;
 
-	if(dmx_receive_num < 512)dmx_receive_num ++;	// t�mb t�lc�mz�s v�delem
+	if(dmx_receive_num < 512)dmx_receive_num ++;
 }
 
 void usart_rx_fe_callback(void)
 {
-	dmx_receive_num = 0; 							// frame error -->reset
+	dmx_receive_num = 0;	// frame error -->reset
 }
 
 void dmx_usart_send(void)
 {
-
 	static uint32_t current_time = 0;
 	static uint32_t time_dmx_send = 0;
 	static uint16_t interval_dmx_send_0 = DMX_SEND_TIME;	
@@ -42,19 +42,19 @@ void dmx_usart_send(void)
 
 	current_time = HAL_GetTick();
 
-	if ((uint32_t)(current_time - time_dmx_send)>= interval_dmx_send_0)	// idozites
+	if ((uint32_t)(current_time - time_dmx_send)>= interval_dmx_send_0)
 	{
 		time_dmx_send = current_time;
 		usart_transmit(&(dmx_send_buffer[send_n]));
 		send_n++;
-		interval_dmx_send_0 = DMX_SEND_TIME;			// reset ido
+		interval_dmx_send_0 = DMX_SEND_TIME;
 
-		if(send_n > DMX_MAX_ADRESS) 					// max value ig k�ldj�k
+		if(send_n > DMX_MAX_ADRESS)
 		{
 			send_n = DMX_START_ADRESS;
-			interval_dmx_send_0 = DMX_RESET_TIME;		// reset id�
+			interval_dmx_send_0 = DMX_RESET_TIME;
 
-			for (int i = 0; i<15; i++)	  				// buffr friss�t�se
+			for (int i = 0; i<15; i++)
 			{
 				dmx_send_buffer[i] = *(dmx_adress_pointer+i);
 			}

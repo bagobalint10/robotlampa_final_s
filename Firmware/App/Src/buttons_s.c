@@ -6,21 +6,19 @@
  */ 
 
 #include <buttons_s.h>
+
 #include <interrupt_s.h>
 #include "stddef.h"
 
-
-static volatile uint8_t buttons = 0;	// direktbe beolvasott gomb �rt�kek
-static uint8_t db_time = 0;				// debounce time
+static volatile uint8_t buttons = 0;
+static uint8_t db_time = 0;
 
 static uint8_t *button_0_p = NULL;
 static uint8_t *button_1_p = NULL;
 static uint8_t *button_2_p = NULL;
 static uint8_t *button_3_p = NULL;
 
-// private
-
-static void pcint_c_callback(uint16_t GPIO_pin)		// gomb ext interrupt callback
+static void pcint_c_callback(uint16_t GPIO_pin)
 {
 	switch(GPIO_pin)
 	{
@@ -52,8 +50,6 @@ static void pcint_c_callback(uint16_t GPIO_pin)		// gomb ext interrupt callback
 	}
 }
 
-// public
-
 void set_buttons_variables(uint8_t *button_0, uint8_t *button_1, uint8_t *button_2, uint8_t *button_3 )
 {
 	button_0_p =  button_0;
@@ -64,11 +60,11 @@ void set_buttons_variables(uint8_t *button_0, uint8_t *button_1, uint8_t *button
 
 void buttons_init(uint8_t debounce_time)
 {
-	db_time = debounce_time;						// pergés mentesítési idő
+	db_time = debounce_time;
 
-	set_pcint_Callback(0, pcint_c_callback);		// Callback fgv. beallitasa
+	set_pcint_Callback(0, pcint_c_callback);
 
-	buttons  = (buttons & ~(0x01));					// kezdő értékek kiolvasása
+	buttons  = (buttons & ~(0x01));
 	buttons |= HAL_GPIO_ReadPin(GOMB_UP_GPIO_Port, GOMB_UP_Pin);
 
 	buttons  = (buttons & ~(0x02));
@@ -79,22 +75,21 @@ void buttons_init(uint8_t debounce_time)
 
 	buttons  = (buttons & ~(0x08));
 	buttons |= (HAL_GPIO_ReadPin(GOMB_MODE_GPIO_Port, GOMB_MODE_Pin)<<3);
-
 }
 
 void button_read(void)
 {
-	static uint32_t prev_time = 0;					// perg�s mentes�t�shez v�ltoz�k
+	static uint32_t prev_time = 0;
 	static uint16_t interval_time = 0;
 
 	uint32_t current_time = HAL_GetTick();
-	interval_time = db_time;						//devounce time be�ll�t�sa
+	interval_time = db_time;
 
-	if ((uint32_t)(current_time - prev_time)>= interval_time)  //perg�s mentes�t�s
+	if ((uint32_t)(current_time - prev_time)>= interval_time)
 	{
 		prev_time = current_time;
 
-		*button_0_p = ((buttons & 0x01) && 0x01);	//pointereknek gomb �rt�k�nek �tad�sa
+		*button_0_p = ((buttons & 0x01) && 0x01);
 		*button_1_p = ((buttons & 0x02) && 0x01);
 		*button_2_p = ((buttons & 0x04) && 0x01);
 		*button_3_p = ((buttons & 0x08) && 0x01);

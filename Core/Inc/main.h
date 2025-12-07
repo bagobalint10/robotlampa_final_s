@@ -41,7 +41,7 @@ extern "C" {
 
 /* Exported constants --------------------------------------------------------*/
 /* USER CODE BEGIN EC */
-#define PWM_ON_DUTY 420 	//5us
+#define PWM_ON_DUTY 420 	// 5us
 #define PWM_OFF_DUTY 0
 /* USER CODE END EC */
 

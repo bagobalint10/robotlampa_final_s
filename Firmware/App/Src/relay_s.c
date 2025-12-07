@@ -7,7 +7,6 @@
 
 #include <relay_s.h>
 
-
 void relay_set(void)
 {
 	HAL_GPIO_WritePin(RELAY_GPIO_Port, RELAY_Pin, 1);

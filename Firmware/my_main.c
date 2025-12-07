@@ -5,13 +5,12 @@
  *      Author: bagob
  */
 
-#include <control_board_s.h>
 #include <my_main.h>
 
+#include <control_board_s.h>
 #include <dmx_usart_s.h>
 #include <motor_1_drive_s.h>
 #include <motor_2_drive_s.h>
-
 
 #define	PAN_CH 11
 #define	PAN_F_CH 12
@@ -19,14 +18,14 @@
 #define	TILT_F_CH 14
 #define	PT_SPEED_CH 15
 
-#define SM_TIME 5							// 70ms egy frame
-#define SM_COUNT 17							// 85 ms mintavételezés
-#define SM_COUNT_REV 0.058824f				// 17 db interpolálás 5ms enként
+#define SM_TIME 5
+#define SM_COUNT 17
+#define SM_COUNT_REV 0.058824f
 
 static uint16_t dmx_pan_value = 0;
 static uint16_t dmx_tilt_value = 0;
 static uint8_t  dmx_speed_value = 0;
-static uint8_t  reset_f = 0; 				// 0--reset,  > 0 fut a program
+static uint8_t  reset_f = 0;
 
 static uint16_t dmx_pan_sm_value = 0;
 static uint16_t dmx_tilt_sm_value = 0;
@@ -46,19 +45,18 @@ static void dmx_signal_smoothing(void)
 	static uint16_t tilt_next = 0;
 	static uint16_t tilt_prev = 0;
 
-
 	static uint32_t current_time = 0;
 	static uint32_t prev_time = 0;
 	static uint16_t count = 0;
 
 	current_time = HAL_GetTick();
 
-	if ((uint32_t)(current_time - prev_time) >= SM_TIME)	// időzítés
+	if ((uint32_t)(current_time - prev_time) >= SM_TIME)
 	{
 		prev_time = current_time;
 		count++;
 
-		if(count >= SM_COUNT )								// mintavételezés
+		if(count >= SM_COUNT )
 		{
 			count = 0;
 
@@ -69,12 +67,14 @@ static void dmx_signal_smoothing(void)
 			pan_next = dmx_pan_value;
 		}
 
-		float step;											// interpolálás
+		// interpolálás
 
-		step = ((float)tilt_next - tilt_prev) * SM_COUNT_REV; 	// lépéskülönbség / interp. szám
+		float step;
+
+		step = ((float)tilt_next - tilt_prev) * SM_COUNT_REV;
 		dmx_tilt_sm_value = (uint16_t)((float)tilt_prev + ((float)count * step));
 
-		step = ((float)pan_next - pan_prev) * SM_COUNT_REV; 	// lépéskülönbség / interp. szám
+		step = ((float)pan_next - pan_prev) * SM_COUNT_REV;
 		dmx_pan_sm_value = (uint16_t)((float)pan_prev + ((float)count * step));
 	}
 }
@@ -87,9 +87,7 @@ void my_main_init(void)
 void my_main_loop(void)
 {
 	reset_f = control_board_main();
-
 	dmx_usart_send();
-
 	dmx_signal_smoothing();
 
 	if(reset_f)
@@ -101,8 +99,8 @@ void my_main_loop(void)
 	}
 	else							// reset
 	{
-	 motor_1_main(0 , 0); 			// 0 speed, 0 pos resethez
-	 motor_2_main(0 , 0); 			// 0 speed, 0 pos resethez
+	 motor_1_main(0 , 0);
+	 motor_2_main(0 , 0);
 	}
 }
 

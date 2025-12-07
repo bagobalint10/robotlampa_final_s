@@ -104,8 +104,6 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-
-
   my_main_init();
 
   HAL_UART_Receive_IT(&huart1, &rx_buffer, 1);
@@ -118,6 +116,7 @@ int main(void)
 
   __HAL_TIM_SET_COMPARE(&htim5, TIM_CHANNEL_2, PWM_ON_DUTY); // set pwm duty
   HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_2);					 // start tim5 pwm channel
+
   htim5.Instance->CR1 &= ~TIM_CR1_ARPE; 					 // ARPE = 0 → shadow OFF
   HAL_GPIO_WritePin(RELAY_ENABLE_GPIO_Port, RELAY_ENABLE_Pin, 0);
 
@@ -405,7 +404,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)			// gombok interrupt callback
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	ISR_GPIO_EXTI_Callback(GPIO_Pin);
 }
@@ -469,13 +468,11 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
     if(htim->Instance == TIM2)
     {
-    	// motor_1_drive --> interrupt függvénye
     	motor_1_update_timer();
     }
 
     if(htim->Instance == TIM5)
 	{
-		// motor_2_drive --> interrupt függvénye
 		motor_2_update_timer();
 	}
 }

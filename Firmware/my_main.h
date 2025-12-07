@@ -13,5 +13,4 @@
 	void my_main_init(void);
 	void my_main_loop(void);
 
-
 #endif /* MY_MAIN_H_ */

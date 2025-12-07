@@ -6,9 +6,6 @@
  */ 
   
 #include <segment_write_digit_s.h>
-
-
-// prive
  
 static uint8_t bit_functions(uint8_t char_i ,uint8_t dot, uint8_t enable)
 {
@@ -20,92 +17,91 @@ static uint8_t bit_functions(uint8_t char_i ,uint8_t dot, uint8_t enable)
 			 0b00001010, 0b10110110, 0b00011110, 0b01111100, 0b00111000, 0b00111000,
 			 0b01101110, 0b01100110, 0b11011010 };// 0-9 ig sz�mok 10- karakterek
 
-	 static const uint8_t dot_mask = 0x01;  // pont bitk�p
+	 static const uint8_t dot_mask = 0x01;
 	 uint8_t char_pixel = 0;
 
-	 if(enable == 0)						// enable == 0  --> kijelz� t�rl�se
+	 if(enable == 0)							// enable == 0  --> kijelz� t�rl�se
 	 {
 		 char_i = 40;
 		 char_pixel = character_table[char_i];	// ' '
 	 }
-	 else									// enable == 1  --> norm�l kiirat�s
+	 else										// enable == 1  --> norm�l kiirat�s
 	 {
 		 char_pixel = character_table[char_i];
-		 // karakter_hozz�rendel�s a pixel k�pekhez
-		 if (dot)							// dot == 1 --> pont maszkol�s
+
+		 if (dot)								// dot == 1 --> pont maszkol�s
 		 {
-			 char_pixel |= (dot_mask);  	// karakter + pont
+			 char_pixel |= (dot_mask);  		// karakter + pont
 		 }
 	 }
 
 	 return char_pixel;
 }
 
- static void shift_out(uint8_t sr_data) 	// adat kishiftel�s --> csak data + clock kezel�s
- {
-	 for (int i = 0; i < 8 ; i++) 			// 8 bit kishiftek�se
-	 {
-		 if(~(sr_data) & (0x01 << i)) 		// 2. kishiftel�s
-		 {
-			 HAL_GPIO_WritePin(SR_DATA_GPIO_Port, SR_DATA_Pin, 1);
-		 }
-		 else
-		 {
-			 HAL_GPIO_WritePin(SR_DATA_GPIO_Port, SR_DATA_Pin, 0);
-		 }
+static void shift_out(uint8_t sr_data)
+{
+	for (int i = 0; i < 8 ; i++)
+	{
+		if(~(sr_data) & (0x01 << i))
+		{
+			HAL_GPIO_WritePin(SR_DATA_GPIO_Port, SR_DATA_Pin, 1);
+		}
+		else
+		{
+			HAL_GPIO_WritePin(SR_DATA_GPIO_Port, SR_DATA_Pin, 0);
+		}
 
-		 HAL_GPIO_WritePin(SR_CLOCK_GPIO_Port, SR_CLOCK_Pin, 1);
-		 HAL_GPIO_WritePin(SR_CLOCK_GPIO_Port, SR_CLOCK_Pin, 0);
-	 }
+		HAL_GPIO_WritePin(SR_CLOCK_GPIO_Port, SR_CLOCK_Pin, 1);
+		HAL_GPIO_WritePin(SR_CLOCK_GPIO_Port, SR_CLOCK_Pin, 0);
+	}
+}
+
+static uint8_t char_convert(uint8_t char_cnv) 	// ascii --> karaktert�mb_t�mbindex
+{
+	if(char_cnv == ' ')  						// space
+	{
+		char_cnv =  40;
+
+	}else if(char_cnv >= 97 && char_cnv <= 122)	// a-z
+	{
+		char_cnv -= 87;
+
+	}else if(char_cnv >= 48 && char_cnv <= 57) 	// 0-9
+	{
+		char_cnv -= 48;
+	}else
+	{
+		char_cnv = 40;
+	}
+
+	return char_cnv;
  }
 
- static uint8_t char_convert(uint8_t char_cnv) 		// ascii --> karaktert�mb_t�mbindex
- {
-	 if(char_cnv == ' ')  							// space
-	 {
-		 char_cnv =  40;
-
-	 }else if(char_cnv >= 97 && char_cnv <= 122)	// a-z
-	 {
-		 char_cnv -= 87;
-
-	 }else if(char_cnv >= 48 && char_cnv <= 57) 	// 0-9
-	 {
-		 char_cnv -= 48;
-	 }else											// default: space
-	 {
-		 char_cnv = 40;
-	 }
-
-	 return char_cnv;
- }
-
-void segment_write_digit(uint8_t digit, uint8_t character, uint8_t dot, uint8_t enable)  //ez kezeli a multiplexel�st is ? diregtbe �ll�tja a portokat?
+void segment_write_digit(uint8_t digit, uint8_t character, uint8_t dot, uint8_t enable)
 {	
-
 	uint8_t char_pixels = 0;
 
-	character = char_convert(character);   					// 1. ez egy karakter konverzi� asci --> szimb�lumt�mb indexe
-	char_pixels = bit_functions(character, dot, enable);	// szimb�lum index--> bitk�p + enged�lyez�s + pont r�maszkol�sa
+	character = char_convert(character);
+	char_pixels = bit_functions(character, dot, enable);
 
-	//1. shift out   
+	// 1. shift out
 		
-	uint8_t shift_szam = 0;			 		// shift register bit conversion
+	uint8_t shift_szam = 0;
 	uint8_t shift_digit = 0;
-	shift_digit = ((digit & 0x08) >>1);    	//0x04 be
-	shift_szam = ((char_pixels & 0x80) >>1) | ((char_pixels & 0x20) >>1) | ((char_pixels & 0x10) <<1) | ((char_pixels & 0x01) <<3) ; // pixel mapping conversion
+	shift_digit = ((digit & 0x08) >>1);
+	shift_szam = ((char_pixels & 0x80) >>1) | ((char_pixels & 0x20) >>1) | ((char_pixels & 0x10) <<1) | ((char_pixels & 0x01) <<3) ;
 
 	shift_out((shift_szam)|(shift_digit));
 	
-	//2. shift out 
+	// 2. shift out
  	
 	shift_szam = 0;
-	shift_szam = ((char_pixels & 0x40) >> 1) | ((char_pixels & 0x08) << 1) | ((char_pixels & 0x04) << 1) | ((char_pixels & 0x02) << 5) ;  // pixel mapping konverzi�
+	shift_szam = ((char_pixels & 0x40) >> 1) | ((char_pixels & 0x08) << 1) | ((char_pixels & 0x04) << 1) | ((char_pixels & 0x02) << 5) ;
 	shift_digit = ((digit & 0x01) <<1) | ((digit & 0x02) <<1) | ((digit & 0x04) >>2)  ;
 
 	shift_out((shift_szam)|(shift_digit));
 
-	//Refresh outputs
+	// Refresh outputs
 
 	HAL_GPIO_WritePin(SR_LATCH_GPIO_Port, SR_LATCH_Pin, 1);
 	HAL_GPIO_WritePin(SR_LATCH_GPIO_Port, SR_LATCH_Pin, 0);

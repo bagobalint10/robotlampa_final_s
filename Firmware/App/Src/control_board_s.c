@@ -5,8 +5,9 @@
  *  Author: bagob
  */ 
 
-#include <buttons_s.h>
 #include <control_board_s.h>
+
+#include <buttons_s.h>
 #include <dmx_usart_s.h>
 #include <eepromh_s.h>
 #include <lcd_driver_s.h>
@@ -23,7 +24,7 @@ static uint8_t bt_down = 1;
 static uint8_t bt_enter = 1;
 static uint8_t bt_mode = 1;
 
-//lcd valtouok
+//lcd valtozok
 
 static uint8_t lcd_buffer[4] = "abcd";
 static uint8_t lcd_dot_buffer[4] = {0,0,0,0};
@@ -34,7 +35,7 @@ static uint8_t sub_menu_f = 0;
 static int sub_menu_n = 0;
 
 static uint8_t dmx_menu_blink = 0;
-static uint8_t lamp_cold_f = 1;  // 0-nem --> heat = lamp_wait , 1 igen, (szabad e ind�tani)
+static uint8_t lamp_cold_f = 0;
 static uint8_t lamp_count = 0;
 
 static void reset(void)
@@ -46,9 +47,8 @@ static void reset(void)
 	static uint8_t motor_1_f = 0;
 	static uint8_t motor_2_f = 0;
 
-	if(!hall2 && !hall3 )  //2+3
+	if(!hall2 && !hall3 )
 	{
-		// reset motor 1 state - pan
 		if(!motor_1_f)
 		{
 			motor_1_f = 1;
@@ -58,7 +58,6 @@ static void reset(void)
 
 	if(!hall1)
 	{
-		// reset motor 2 state - tilt
 		if(!motor_2_f)
 		{
 			motor_2_f = 1;
@@ -66,11 +65,10 @@ static void reset(void)
 		}
 	}
 
-	if(motor_1_f && motor_2_f) 	// minden alap helyzetben
+	if(motor_1_f && motor_2_f)
 	{
 		menu_n++;
 	}
-
 }
 
 static void push_string(void)
@@ -84,28 +82,27 @@ static void push_string(void)
 												" off",
 												"    "	};
 
-	const char *menu_pointer;							// string_push hoz
+	const char *menu_pointer;
 
 	if(sub_menu_f) menu_pointer = sub_menu_string[sub_menu_n];  			// SUBMENU	KIJELZ�S
 	else menu_pointer = menu_string[menu_n];								// sima MENU KIJELZ�S
 	if(menu_n == 1) menu_pointer = menu_string[1];							// dmx m�dba fix!!
 	if((menu_n == 1) && dmx_menu_blink) menu_pointer = sub_menu_string[2];	// dmx m�dba VILLOG (�res)
 
-	for (int i = 0; i<4; i++)							//str_copy
+	for (int i = 0; i<4; i++)
 	{
 		lcd_buffer[i] = *(menu_pointer+i);
 	}
 
-	if(menu_n == 1)										// dmx adress kijelz�se 
+	if(menu_n == 1)
 	{
-		 // adress convert string
 		 char s_adress[3];
 
-		 s_adress[2] = (dmx_adress%10)+48;				// egyes helyiertek
+		 s_adress[2] = (dmx_adress%10)+48;
 		 s_adress[1] = (dmx_adress/10%10)+48;
 		 s_adress[0] = (dmx_adress/100%10)+48;
-		 //adresss kijelz�s 					
-		 for (int i = 1; i<4; i++)						// str_copy 1-3
+
+		 for (int i = 1; i<4; i++)
 		 {
 			 lcd_buffer[i] = s_adress[i-1];
 		 }
@@ -115,7 +112,6 @@ static void push_string(void)
 
 static void menu(void)
 {
- 
 	static uint32_t current_time = 0;
 	current_time = HAL_GetTick();
 	static uint32_t prev_time_long = 0;
@@ -134,7 +130,7 @@ static void menu(void)
 	static uint16_t interval_heat_blink = 100;	// heat dots animacio
 
 	static uint32_t prev_time_lamp_cold = 0;
-	static uint32_t interval_lamp_cold = 300000;// kih�l�si id� 5 perc  5*60 *1000
+	static uint32_t interval_lamp_cold = 300000;// kih�l�si ido 5 perc  5*60 *1000
 
 
 	static uint8_t heat_dots = 0x02;
@@ -146,7 +142,7 @@ static void menu(void)
 	static uint8_t bt_enter_tmp = 1;
 	static uint8_t bt_mode_tmp = 1;
 
-	uint8_t enter_f = 0; 						// dinamikus, gomb flagek --> egy ciklus �let�
+	uint8_t enter_f = 0; 						// dinamikus, gomb flagek --> egy ciklus
 	uint8_t mode_f = 0;
 	uint8_t up_f = 0;
 	uint8_t down_f = 0;
@@ -164,24 +160,25 @@ static void menu(void)
 	
 
 	//---------> eldetektalas
-	if(bt_up^bt_up_tmp)	 		// �l detekt�l�s
+
+	if(bt_up^bt_up_tmp)
 	{
-		up_f = !bt_up;			// l�ptet�s, lefut� �ln�k
+		up_f = !bt_up;
 		bt_up_tmp = bt_up;
 	}
-	if(bt_down^bt_down_tmp)	 	// �l detekt�l�s
+	if(bt_down^bt_down_tmp)
 	{
-		down_f = !bt_down;		// l�ptet�s, lefut� �ln�k
+		down_f = !bt_down;
 		bt_down_tmp = bt_down;
 	}
-	if(bt_enter^bt_enter_tmp)	// �l detekt�l�s
+	if(bt_enter^bt_enter_tmp)
 	{
-		enter_f = !bt_enter;	// csak lefut�
+		enter_f = !bt_enter;
 		bt_enter_tmp = bt_enter;
 	}
-	if(bt_mode^bt_mode_tmp)	 	// �l detekt�l�s
+	if(bt_mode^bt_mode_tmp)
 	{
-		mode_f = !bt_mode;	 	// csak lefut�
+		mode_f = !bt_mode;
 		bt_mode_tmp = bt_mode;
 	}
 	
@@ -189,20 +186,20 @@ static void menu(void)
 
 	if((bt_enter+bt_down+bt_up) == 2) 	// ha 1 gomb van csak lenyomva
 	{ 
-		if (!bt_enter)		// nyomva van
+		if (!bt_enter)
 		{
-			if(enter_f) prev_time_long = current_time;	// felfuto el --> reset timer
-			if ((uint32_t)(current_time - prev_time_long)>= interval_long) enter_long_f = 1; // letelt az ido --> set flag 
+			if(enter_f) prev_time_long = current_time;
+			if ((uint32_t)(current_time - prev_time_long)>= interval_long) enter_long_f = 1;
 		}
-		else if (!bt_up)	// nyomva van
+		else if (!bt_up)
 		{
-			if(up_f) prev_time_long = current_time;		// felfuto el --> reset timer
-			if ((uint32_t)(current_time - prev_time_long)>= interval_long) up_long_f = 1; // letelt az ido --> set flag
+			if(up_f) prev_time_long = current_time;
+			if ((uint32_t)(current_time - prev_time_long)>= interval_long) up_long_f = 1;
 		}
-		else if (!bt_down)	// nyomva van
+		else if (!bt_down)
 		{
-			if(down_f) prev_time_long = current_time;	// felfuto el --> reset timer
-			if ((uint32_t)(current_time - prev_time_long)>= interval_long) down_long_f = 1; // letelt az ido --> set flag
+			if(down_f) prev_time_long = current_time;
+			if ((uint32_t)(current_time - prev_time_long)>= interval_long) down_long_f = 1;
 		}
 	}
 	else
@@ -214,12 +211,10 @@ static void menu(void)
 	
 	//---------> �ldetekt�l�s eddig
 
-	// men� + submen� switch --> hosszu --> belsej�t f�ggv�nyezni 
-	switch(menu_n)		// --> ha "r�l�ptem" az adott men�pontra
+	switch(menu_n)
 	{
 	case 0:		// reset 
 				reset();
-				// kil�p�s --> reset �ll�tja a flaget 
 				break;
 
 	case 1:		// DMX ADRESS
@@ -229,15 +224,14 @@ static void menu(void)
 					if(mode_f) sub_menu_f = 0;	// MODE	 --> kil�p�s --> men�
 					if(up_f) dmx_adress++;		// UP-DOWN -->  dmx adress
 					if(down_f) dmx_adress--;
-					// A bet� villogtat�s
+
 					if ((uint32_t)(current_time - prev_time_blink)>= interval_blink)
 					{
 						prev_time_blink = current_time;
 						dmx_menu_blink ^= 0x01;
 					}
-					// gyors l�ptet�s
 
-					if (up_long_f) 		//gyors l�ptet�s up
+					if (up_long_f)
 					{
 						if ((uint32_t)(current_time - prev_time_counter)>= interval_counter)
 						{
@@ -245,7 +239,7 @@ static void menu(void)
 							dmx_adress++;
 						}
 					}
-					if (down_long_f)	//gyors l�ptet�s down
+					if (down_long_f)
 					{
 						if ((uint32_t)(current_time - prev_time_counter)>= interval_counter)
 						{
@@ -303,36 +297,32 @@ static void menu(void)
 
 	//save_enter
 
-	if (sub_menu_f && enter_long_f)	   	// submen�be van + enter long lenyomva  --> set save_f
+	if (sub_menu_f && enter_long_f)
 	{ 
 		save_f = 1;
 	}
 
-	if(save_f && !save_once)  			// 1x fut le
+	if(save_f && !save_once)
 	{
 		save_once = 1;
 		
-
-		// rel� set 
-		// rel� reset 
-		if(menu_n == 2)					// l�mpa save
+		if(menu_n == 2)
 		{
-			if(sub_menu_n == 0) lamp_on_f = 1;					//on
-			else if (sub_menu_n == 1) lamp_on_f = 0;			//off
+			if(sub_menu_n == 0) lamp_on_f = 1;
+			else if (sub_menu_n == 1) lamp_on_f = 0;
 
-		}else if(menu_n == 1)			//adress save
+		}else if(menu_n == 1)
 		{
-			eeprom_write_byte(0, (uint8_t)dmx_adress);			// csak dmx adress ment�se
-			eeprom_write_byte(1, (uint8_t)(dmx_adress >> 8));	// lamp ment�s majd be kapcsol�sn�l
+			eeprom_write_byte(0, (uint8_t)dmx_adress);
+			eeprom_write_byte(1, (uint8_t)(dmx_adress >> 8));
 
-			// DMX ADRESST ITT LEHET GLOB�LIS V�LTOZ�BA BET�LTENI !!! 
 			dmx_adress_pointer = (dmx_array+(dmx_adress));
 		}
 
 	}
-	if (save_f && (save_counter < 10))	  // save counter csak 5x engedi lefutni
+	if (save_f && (save_counter < 10))
 	{
-		// villogtasson 5 x, 6dikn�l -> save_blink = 0
+
 		if ((uint32_t)(current_time - prev_time_save)>= interval_save)
 		{
 			prev_time_save = current_time;
@@ -341,7 +331,7 @@ static void menu(void)
 		}
 	}else lcd_enable = 1;
 
-	if (bt_enter)	// ha az enter felvan engedve 
+	if (bt_enter)
 	{
 		//reset flags
 		save_counter = 0; 
@@ -353,7 +343,6 @@ static void menu(void)
 
 	if(lamp_on_f && lamp_count)
 	{
-		// villogtasson 5 x, 6dikn�l -> save_blink = 0
 		if ((uint32_t)(current_time - prev_time_heat_blink)>= interval_heat_blink)
 		{
 			prev_time_heat_blink = current_time;
@@ -376,11 +365,10 @@ static void menu(void)
 		}
 	}
 
-	/// rel� id�,eeprom, kiirat�s kezel�s
-	if (lamp_on_f && lamp_cold_f)	  // bekapcsolva �s kih�lt  
+	if (lamp_on_f && lamp_cold_f)
 	{
-		lamp_cold_f = 0;	// set 
-		relay_set();		// set 
+		lamp_cold_f = 0;
+		relay_set();
 		eeprom_write_byte(2, lamp_cold_f);
 
 		for (int i = 0; i<4;i++)
@@ -388,10 +376,10 @@ static void menu(void)
 			lcd_dot_buffer[i] = 0x01;
 		}
 
-	}else if (!lamp_on_f && !lamp_cold_f && !lamp_count)  // kikapcsoljuk �s m�g meleg,
+	}else if (!lamp_on_f && !lamp_cold_f && !lamp_count)
 	{ 
-		relay_reset(); 		// ezt csa egyszer k�ne
-		// sz�ml�l�s ind�t�sa  	 --> ha letelt set lamp_cold f
+		relay_reset();
+
 		prev_time_lamp_cold = current_time;
 		lamp_count = 1;
 		for (int i = 0; i<4;i++)
@@ -400,7 +388,7 @@ static void menu(void)
 		}
 	}
 
-	if (lamp_count) // l�mpa id�z�t�s 
+	if (lamp_count)
 	{
 		if ((uint32_t)(current_time - prev_time_lamp_cold)>= interval_lamp_cold)
 		{
@@ -411,27 +399,21 @@ static void menu(void)
 	}
 }
 
- // public f�ggv�nyek 
-
 void control_board_init(void)
 {
-	buttons_init(10); 		//debounce time in ms
+	buttons_init(10);
 	set_buttons_variables(&bt_up, &bt_down, &bt_enter, &bt_mode);
-	lcd_init(4);			// 4x4 = 16ms refresh time
+	lcd_init(4);
 	dmx_adress_pointer = (dmx_array+(dmx_adress));
 
-	// eeprom kiolvas�s
-	/*lamp_cold_f = eeprom_read_byte(2);
-	dmx_adress = eeprom_read_byte(0);
-	dmx_adress |= (eeprom_read_byte(1)<<8);*/
  }
 
-uint8_t control_board_main(void) // ideiglenes sketchi verzio
+uint8_t control_board_main(void)
 {
 	button_read();
 	menu();
 	lcd_write_buffer(lcd_buffer,lcd_dot_buffer,lcd_enable);	
-	return menu_n; 		// reset state megnézése mainban
+	return menu_n;
 }
    
 

@@ -6,6 +6,7 @@
  */ 
 
  #include <interrupt_s.h>
+
  #include "stddef.h"
 
  // PCINT pointers
@@ -18,8 +19,7 @@
  // USART int pointers
  static void (*usart_rx_callback_pointer)(void) = NULL;
 
-
- void ISR_GPIO_EXTI_Callback(uint16_t GPIO_Pin) // meghívja a pointer függvényt
+ void ISR_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
  {
 	 if(pcint_b_callback_pointer) pcint_b_callback_pointer(GPIO_Pin);	// hall
 	 if(pcint_c_callback_pointer) pcint_c_callback_pointer(GPIO_Pin); 	// gombok
@@ -47,13 +47,14 @@
 	 default : break;
 	 }
  }
- // usart 
 
-void set_usart_int_Callback(uint8_t type ,void (*Callback_function)(void) )
-{
+// usart
+
+ void set_usart_int_Callback(uint8_t type ,void (*Callback_function)(void) )
+ {
 	switch(type)
 	{
 		case 0 : usart_rx_callback_pointer = Callback_function; break;
 		default : break;
 	}
-}
+ }
